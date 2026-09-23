@@ -1,4 +1,4 @@
-# 🚀 Day 3 \| Multi-Cloud + DevOps with AI 
+# 🚀 Day 2 \| Multi-Cloud + DevOps with AI 
 
 Continuing my **DevOps learning journey**, Day 3 focused on
 understanding **DevOps fundamentals, tools, SDLC, and practical
