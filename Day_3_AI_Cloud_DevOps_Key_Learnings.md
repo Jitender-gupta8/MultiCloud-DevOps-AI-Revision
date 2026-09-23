@@ -1,4 +1,4 @@
-# 🤖 Day 4 | AI + Cloud + DevOps — Key Learnings
+# 🤖 Day 3 | AI + Cloud + DevOps — Key Learnings
 
 Another step forward in my **Multi-Cloud + DevOps with AI** journey 🚀
 
