@@ -1,4 +1,4 @@
-# 🔐 Day 7 | Public Key vs Private Key — A Must-Know DevOps Concept
+# 🔐 Day 5 | Public Key vs Private Key — A Must-Know DevOps Concept
 
 Continuing my **DevOps learning journey**, today I revised one of the most important concepts for **Linux, Cloud and DevOps automation**.
 
