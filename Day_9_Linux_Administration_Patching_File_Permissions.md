@@ -1,4 +1,4 @@
-# 🐧 Day 9 | Linux Administration, Patching & File Permissions
+# 🐧 Day 5 | Linux Administration, Patching & File Permissions
 
 Continuing my **DevOps learning journey**, today I focused on some practical Linux concepts that are directly relevant to **server administration, troubleshooting, security and automation**.
 
@@ -75,6 +75,6 @@ It starts with understanding the **operating system, services, permissions, patc
 
 **Linux → Administration → Security → Automation → DevOps 🚀**
 
-**Day 9 ✅ | Learn → Practice → Troubleshoot → Apply**
+**Day 5 ✅ | Learn → Practice → Troubleshoot → Apply**
 
-#Day9 #Linux #DevOps #LinuxAdministration #LinuxCommands #SystemAdministration #LinuxSecurity #Nginx #ShellScripting #CloudComputing #DevOpsLearning #CloudEngineering #LearningInPublic #DevOpsJourney
+#Day5 #Linux #DevOps #LinuxAdministration #LinuxCommands #SystemAdministration #LinuxSecurity #Nginx #ShellScripting #CloudComputing #DevOpsLearning #CloudEngineering #LearningInPublic #DevOpsJourney
