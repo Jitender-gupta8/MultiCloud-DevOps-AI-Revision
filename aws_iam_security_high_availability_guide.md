@@ -1,0 +1,114 @@
+# ☁️ Day 12 | AWS IAM, Security & High Availability Reference Guide
+
+Welcome to the **AWS IAM, Security & High Availability Reference Guide**. This document provides detailed explanations of core AWS security concepts, IAM entities, scaling strategies, global infrastructure components, and cloud security best practices commonly discussed in DevOps and Cloud Engineering roles.
+
+---
+
+## 🔐 1. AWS Identity and Access Management (IAM)
+
+AWS IAM is a web service that helps you securely control access to AWS resources. You use IAM to control who is authenticated (signed in) and authorized (has permissions) to use resources.
+
+### Terminology & Concepts
+
+#### Root User vs. IAM User
+* **Root User**: Created when the AWS account is first established. It has complete, unrestricted access to all AWS resources and billing information in the account. 
+  * *Best Practice*: Lock away root user credentials and use it only for task initialization or account management.
+* **IAM User**: An entity that you create in AWS to represent the person or application that uses it to interact with AWS. An IAM User consists of a name and credentials (password or access keys).
+
+#### IAM Users vs. Groups vs. Roles
+* **IAM User**: A single identity with long-term credentials used by one person or application.
+* **IAM Group**: A collection of IAM users. Groups let you specify permissions for multiple users at once, making permissions easier to manage (e.g., a `Developers` group or `Admins` group).
+* **IAM Role**: An IAM identity that you can create in your account that has specific permissions. Unlike an IAM user, a role is not uniquely associated with a single person. Instead, it is intended to be **assumed** by anyone or anything that needs it (such as an EC2 instance or an AWS service). Roles issue **temporary security credentials**.
+
+#### IAM Policies and Permissions
+* **IAM Policy**: A JSON document that defines permissions. It specifies what actions are allowed or denied on which resources, under what conditions.
+* **Permission Policy**: Attached to an IAM identity (User, Group, or Role) to define what that identity can do (e.g., allow `s3:GetObject`).
+* **Trust Policy**: Attached specifically to an **IAM Role**. It defines *who* or *what* is allowed to assume the role (e.g., allowing the `ec2.amazonaws.com` service to assume the role).
+
+#### AWS Managed vs. Customer Managed Policies
+* **AWS Managed Policies**: Standalone policies created and administered by AWS (e.g., `AdministratorAccess`, `AmazonS3ReadOnlyAccess`). AWS updates these automatically when new actions are introduced.
+* **Customer Managed Policies**: Standalone policies that you create and manage within your AWS account, giving you fine-grained control over permissions tailored to your specific infrastructure.
+
+#### Principle of Least Privilege
+* Security concept of providing users, applications, and services only the minimum necessary access rights required to perform their specific job functions—nothing more.
+
+#### Explicit Deny vs. Implicit Deny vs. Allow
+* **Implicit Deny**: By default, all requests to AWS resources are denied.
+* **Allow**: Granted by explicit permissions defined in policies.
+* **Explicit Deny**: A policy statement that specifically uses `"Effect": "Deny"`. 
+  * **Key Rule**: An **Explicit Deny always overrides any Allow** statements, regardless of where or how the Allow was configured.
+
+---
+
+## 🔑 2. IAM Roles & Temporary Credentials (AWS STS)
+
+### AWS Security Token Service (STS)
+AWS STS is a web service that enables you to request temporary, limited-privilege credentials for AWS IAM users or for users that you authenticate (federated users).
+
+### Key Terms
+* **Temporary Credentials**: Short-lived access keys (`AccessKeyId`, `SecretAccessKey`, and `SessionToken`) that expire automatically after a specified duration (from 15 minutes to 12 hours).
+* **Role Assumption (`sts:AssumeRole`)**: The process where a principal (like an EC2 instance or Lambda function) exchanges its request for temporary credentials to perform actions allowed by the role's permission policy.
+
+---
+
+## 📈 3. Horizontal vs. Vertical Scaling
+
+### Horizontal Scaling (Scale Out / Scale In)
+Adding or removing computing units/instances in response to load.
+* **Scale Out**: Adding more instances to share the traffic load.
+* **Scale In**: Terminating excess instances when traffic drops to save costs.
+* **Common Technologies**: AWS Auto Scaling Groups (ASG), Application Load Balancers (ALB), Kubernetes Pod Autoscalers.
+
+### Vertical Scaling (Scale Up / Scale Down)
+Modifying the hardware capabilities of an existing server/instance.
+* **Scale Up**: Changing an instance type from `t3.micro` to `t3.large` to get more CPU and RAM.
+* **Scale Down**: Downgrading server capacity when resource demands decrease.
+* **Limitations**: Requires server restarts/downtime and is capped by the maximum physical capacity of a single host machine.
+
+---
+
+## 🌍 4. AWS Global Infrastructure
+
+### Infrastructure Hierarchy
+1. **Data Center**: A physical facility containing physical rack servers, storage arrays, networking switches, power supplies, and cooling equipment.
+2. **Availability Zone (AZ)**: One or more discrete data centers with independent power, cooling, and networking within an AWS Region. AZs are connected with low-latency, redundant networking.
+3. **AWS Region**: A physical geographic location in the world where AWS clusters data centers. Each Region consists of multiple, isolated, and physically separate AZs (typically 3 or more).
+
+### Architecture Strategies
+
+#### High Availability (HA)
+* **Goal**: Ensure continuous operational uptime without human intervention during localized failures.
+* **Scope**: Usually **Multi-AZ** within a single Region.
+* **Implementation**: Deploying application instances across multiple Availability Zones behind a Load Balancer. If AZ-1 fails, traffic automatically shifts to AZ-2.
+
+#### Disaster Recovery (DR)
+* **Goal**: Restore infrastructure, operations, and data following a catastrophic event or regional outage.
+* **Scope**: Typically **Multi-Region**.
+* **Implementation**: Replicating databases asynchronously across different AWS Regions (e.g., `us-east-1` to `us-west-2`) to recover if an entire geographic Region goes offline.
+
+---
+
+## 🛡️ 5. Summary of AWS Security Best Practices
+
+1. **Protect Root User**: Enable hardware/virtual Multi-Factor Authentication (MFA) immediately and delete root access keys.
+2. **Use Roles for Compute**: Never hardcode long-lived IAM access keys inside application source code or EC2 instances; attach IAM Roles instead.
+3. **Enforce MFA**: Require MFA for all IAM users, especially those with administrative privileges.
+4. **Grant Least Privilege**: Start with zero permissions and incrementally grant only what is required.
+5. **Rotate Credentials**: Periodically update passwords and key pairs if long-term credentials are used.
+6. **Audit Access**: Use AWS CloudTrail and IAM Access Analyzer to regularly review active permissions and user activity.
+
+---
+
+## 📚 Summary Reference Matrix
+
+| Concept | Scope | Key Characteristic | Primary Use Case |
+| :--- | :--- | :--- | :--- |
+| **IAM User** | Account level | Long-term credentials (password/keys) | Individual human operators |
+| **IAM Role** | Account/Cross-account | Short-term temporary credentials (STS) | AWS Services, Applications, Federation |
+| **Multi-AZ (HA)** | Regional level | Low latency, automatic failover | High Availability application deployments |
+| **Multi-Region (DR)** | Global level | Geographic redundancy, cross-region replication | Disaster recovery planning |
+| **Horizontal Scaling** | System Architecture | Dynamic capacity via instance count | Stateless web applications |
+| **Vertical Scaling** | Machine level | Changing underlying compute size | Databases, stateful monolithic apps |
+
+---
+*Document compiled for GitHub documentation and DevOps learning tracks.*
