@@ -1,0 +1,142 @@
+# 🐧 Day 6 | Linux Troubleshooting & Reference Guide
+
+Welcome to the **Linux Troubleshooting & Operations Reference Guide**. This document provides a detailed breakdown of fundamental Linux troubleshooting methodologies, diagnostic commands, system management concepts, and terminology commonly encountered in DevOps, Site Reliability Engineering (SRE), and Systems Administration.
+
+---
+
+## 🎯 The Systematic Troubleshooting Methodology
+
+When dealing with production issues, following a structured workflow prevents hasty decisions and minimizes downtime.
+
+```
++-----------------------------------------------------------------------------------+
+|  1. IDENTIFY  -->  2. CHECK LOGS  -->  3. ANALYZE  -->  4. ISOLATE               |
+|                                                                                   |
+|  7. DOCUMENT  <--  6. VERIFY      <--  5. FIX                                     |
++-----------------------------------------------------------------------------------+
+```
+
+1. **Identify**: Define the problem statement clearly. What is the expected behavior vs. the actual behavior? (e.g., "Web server returns HTTP 502").
+2. **Check Logs**: Gather system and application context using logging frameworks (`journalctl`, log files).
+3. **Analyze**: Evaluate metric data and log outputs to form a hypothesis regarding the root cause.
+4. **Isolate**: Narrow down variables. Is it a network issue, process failure, memory exhaustion, or disk capacity issue?
+5. **Fix**: Apply the minimum effective change or corrective measure.
+6. **Verify**: Ensure the fix resolves the issue without introducing unintended side effects or regressions.
+7. **Document**: Record the incident, root cause analysis (RCA), and remediation steps for team knowledge sharing and future reference.
+
+---
+
+## 🔹 Core Troubleshooting Pillars & Command Explanations
+
+---
+
+### 1. System Logging Frameworks
+
+Logs are the primary record of kernel and service events.
+
+*   **`journalctl`**: Query tool for the `systemd` journal. It retrieves binary logs collected by `systemd-journald`.
+    *   *Usage*: `journalctl -u nginx.service -f` (Follow logs for Nginx in real-time).
+*   **`tail`**: Output the last part of files.
+    *   *Usage*: `tail -n 100 /var/log/syslog` or `tail -f /var/log/nginx/error.log` to stream logs live.
+*   **`dmesg`**: Displays messages from the kernel ring buffer. Crucial for diagnosing hardware failures, driver issues, or Out-Of-Memory (OOM) killer events.
+    *   *Usage*: `dmesg -T --level=err` (Print kernel errors with human-readable timestamps).
+
+---
+
+### 2. System Performance & Resource Monitoring
+
+Monitoring CPU, Memory, and I/O helps identify bottlenecks.
+
+*   **`top`**: Dynamic real-time view of running processes, displaying overall CPU and memory utilization.
+*   **`htop`**: An interactive, colorful process viewer and text-mode application that provides a more user-friendly interface than traditional `top`.
+*   **`free`**: Displays total, used, and available physical memory and swap space.
+    *   *Usage*: `free -h` (Displays values in human-readable format, e.g., MB/GB).
+*   **`uptime`**: Shows how long the system has been running, user count, and load averages (for 1, 5, and 15 minutes).
+*   **`vmstat`**: Virtual memory statistics. Reports information about processes, memory, paging, block I/O, traps, and CPU activity.
+    *   *Usage*: `vmstat 1 5` (Report stats every 1 second, 5 times).
+*   **`iostat`**: Input/Output statistics for devices and partitions. Helps identify storage latency or I/O saturation.
+
+---
+
+### 3. Disk & Storage Management
+
+Disk issues often stem from full partition space or inode exhaustion.
+
+*   **`df`**: Disk Free. Reports total and available disk space usage on filesystems.
+    *   *Usage*: `df -h` (Human-readable filesystem breakdown) or `df -i` (Check inode usage).
+*   **`du`**: Disk Usage. Estimates file and directory space usage.
+    *   *Usage*: `du -sh /var/log/*` (Summarize size of directories inside `/var/log`).
+*   **`lsblk`**: List Block Devices. Displays information about all available block storage devices (hard drives, NVMe drives, partitions) in a tree format.
+*   **`fdisk`**: A disk partition manipulator utility used to view, create, modify, or delete disk partitions.
+
+---
+
+### 4. File Ownership & Permission Controls
+
+Linux uses strict POSIX permission models to govern resource access.
+
+*   **`chmod`**: Change Mode. Alters file or directory permissions (Read `r=4`, Write `w=2`, Execute `x=1`).
+    *   *Usage*: `chmod 755 script.sh` or `chmod u+x script.sh`.
+*   **`chown`**: Change Owner. Changes the user and/or group ownership of a file or directory.
+    *   *Usage*: `chown -R www-data:www-data /var/www/html`.
+*   **Linux Ownership**: The concept where every file/directory is owned by a specific **User** and **Group**, determining who can access or modify it.
+
+---
+
+### 5. Service & Daemon Management
+
+Modern Linux distributions manage services using the `systemd` init system.
+
+*   **`systemctl status <service>`**: Displays current operational status, process ID (PID), and recent logs of a unit/service.
+*   **`systemctl start <service>`**: Launches an inactive service immediately.
+*   **`systemctl restart <service>`**: Stops and restarts a service (commonly used to apply configuration updates).
+
+---
+
+### 6. Application Debugging & Log Parsing
+
+Utilities to quickly inspect, search, and filter textual data within large log files.
+
+*   **`grep`**: Global Regular Expression Print. Searches text files for lines matching a specified pattern.
+    *   *Usage*: `grep -i "error" /var/log/nginx/error.log`.
+*   **`less`**: A terminal page reader that enables forward and backward navigation through large log files without loading the entire file into memory.
+
+---
+
+### 7. Process Diagnostics & Control
+
+Managing hung, runaway, or resource-heavy processes.
+
+*   **`ps`**: Process Status. Snapshot of currently active processes.
+    *   *Usage*: `ps aux` or `ps -ef` (List all running processes).
+*   **`lsof`**: List Open Files. Displays files opened by processes, including network sockets, ports, and pipes.
+    *   *Usage*: `lsof -i :80` (Find which process is bound to port 80).
+*   **`kill`**: Sends a signal to a process (e.g., `SIGTERM` [15] to gracefully stop, or `SIGKILL` [9] to forcibly terminate).
+    *   *Usage*: `kill -9 <PID>`.
+
+---
+
+### 8. Hardware & Kernel Diagnostics
+
+Interacting with low-level system components and underlying drivers.
+
+*   **`smartctl`**: Self-Monitoring, Analysis, and Reporting Technology tool. Monitors drive health and predicts disk failures.
+    *   *Usage*: `smartctl -a /dev/sda`.
+*   **Kernel**: The core core program of an OS that manages hardware resources (CPU, RAM, devices) and acts as a bridge between hardware and software application processes.
+
+---
+
+## 📚 Glossary of Terms
+
+| Term | Definition |
+| :--- | :--- |
+| **DevOps** | A set of practices combining software development (Dev) and IT operations (Ops) to shorten the systems development lifecycle and provide continuous delivery. |
+| **SRE** | Site Reliability Engineering; a discipline that applies software engineering principles to infrastructure and operations problems. |
+| **Kernel** | The foundational software layer managing system hardware and providing core services to user space programs. |
+| **Daemon** | A background service process that runs continuously without direct user interaction (e.g., `sshd`, `systemd`). |
+| **Inode** | A data structure in Linux filesystems that stores metadata about a file (permissions, owner, size), excluding its actual name and data content. |
+| **I/O Saturation** | A condition where storage read/write requests exceed the capacity of the storage controller or disk, leading to latency. |
+
+---
+
+*Document compiled for GitHub documentation and DevOps learning tracks.*
